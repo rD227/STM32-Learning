@@ -1,3 +1,30 @@
-build
+# Build output
+build/
+Debug/
+Release/
+
+# STM32CubeMX
 mx.scratch
 !.settings
+
+# CubeMX backups / copies
+*.ioc.bak
+*.bak
+* - 副本.*
+* - Copy.*
+
+# Compiler / linker artifacts
+*.o
+*.obj
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+*.lst
+*.su
+*.d
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
