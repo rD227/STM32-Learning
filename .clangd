@@ -6,6 +6,3 @@ CompileFlags:
 Diagnostics:
   Suppress:
     - unused-includes
-    - unknown_typename
-    - unknown_typename_suggest
-    - typename_requires_specqual
