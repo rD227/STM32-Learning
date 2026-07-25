@@ -1,6 +1,10 @@
 #ifndef __OLED_H
 #define __OLED_H
 
+#include <stdint.h>
+//why didn't include this files will report error: 'uint8_t' was not declared in this scope
+//But still can compile successfully, maybe because of the order of include files
+
 void OLED_Init(void);
 void OLED_Clear(void);
 void OLED_ShowChar(uint8_t Line, uint8_t Column, char Char);

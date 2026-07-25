@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "key.h"
 #include "stm32f1xx_hal_gpio.h"
+#include "OLED.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -124,14 +125,26 @@ int main(void)
     //HAL_Delay(100);
     //HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
     //HAL_Delay(100);
+    int Buzzer_flag = 0, Buzzer_count = 0;
     if (Key_Scan(LIGHT_SENSOR_GPIO_Port, LIGHT_SENSOR_Pin) == GPIO_PIN_RESET)
-    {
-       HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
+    { if (Buzzer_flag == 0)
+      {
+        Buzzer_flag = 1;
+        HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
+      }
     }
     else
-    {
-       HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
+    {  if(Buzzer_flag == 1)
+      {
+        Buzzer_flag = 0;
+        Buzzer_count++;
+        HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
+      }
     }
+    OLED_Init();
+    OLED_Clear();
+    OLED_ShowString(1, 1, "Buzzer Count:");
+    OLED_ShowNum(1, 14, Buzzer_count, 3);
   }
   /* USER CODE END 3 */ 
 }
