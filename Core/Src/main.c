@@ -89,10 +89,8 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-  // Fix 1: 变量声明在循环外，保持状态
   int Buzzer_flag = 0, Buzzer_count = 0;
 
-  // Fix 3: OLED 只初始化一次
   OLED_Init();
   OLED_Clear();
   OLED_ShowString(1, 1, "Buzzer Count:");
@@ -121,20 +119,19 @@ int main(void)
     // 使用消抖函数控制 LED2
     if (Key_Scan(KEY2_GPIO_Port, KEY2_Pin) == 1)
     {
-       HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+       HAL_GPIO_WritePin(GPIOA, LED2_Pin, GPIO_PIN_RESET);
     }
     else
     {
-       HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+       HAL_GPIO_WritePin(GPIOA, LED2_Pin, GPIO_PIN_SET);
     }
 
-    // Fix 2: 比较值改为 1（Key_Scan 触发时返回 1，不是 GPIO_PIN_RESET）
     if (Key_Scan(LIGHT_SENSOR_GPIO_Port, LIGHT_SENSOR_Pin) == 1)
     {
       if (Buzzer_flag == 0)
       {
         Buzzer_flag = 1;
-        HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOB, BUZZER_Pin, GPIO_PIN_SET);
       }
     }
     else
@@ -147,7 +144,7 @@ int main(void)
         OLED_Clear();
         OLED_ShowString(1, 1, "Buzzer Count:");
         OLED_ShowNum(1, 14, Buzzer_count, 3);
-        HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
       }
     }
   }
