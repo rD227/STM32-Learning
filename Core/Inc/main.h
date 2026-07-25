@@ -70,9 +70,9 @@ void Error_Handler(void);
 #define LIGHT_SENSOR_Pin GPIO_PIN_13
 #define LIGHT_SENSOR_GPIO_Port GPIOB
 #define OLED_1_Pin GPIO_PIN_8
-#define OLED_1_GPIO_Port GPIOA
+#define OLED_1_GPIO_Port GPIOB
 #define OLED_2_Pin GPIO_PIN_9
-#define OLED_2_GPIO_Port GPIOA
+#define OLED_2_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
