@@ -61,6 +61,10 @@ void Error_Handler(void);
 #define LED1_GPIO_Port GPIOA
 #define LED2_Pin GPIO_PIN_2
 #define LED2_GPIO_Port GPIOA
+#define ROTATE_CODER_C_Pin GPIO_PIN_6
+#define ROTATE_CODER_C_GPIO_Port GPIOA
+#define ROTATE_CODER_A_Pin GPIO_PIN_7
+#define ROTATE_CODER_A_GPIO_Port GPIOA
 #define KEY1_Pin GPIO_PIN_1
 #define KEY1_GPIO_Port GPIOB
 #define KEY2_Pin GPIO_PIN_11
@@ -70,7 +74,9 @@ void Error_Handler(void);
 #define LIGHT_SENSOR_Pin GPIO_PIN_13
 #define LIGHT_SENSOR_GPIO_Port GPIOB
 #define OLED_1_Pin GPIO_PIN_8
+#define OLED_1_GPIO_Port GPIOB
 #define OLED_2_Pin GPIO_PIN_9
+#define OLED_2_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
