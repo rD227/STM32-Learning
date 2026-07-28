@@ -104,51 +104,20 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    // 使用消抖函数控制 LED1
-    if (Key_Scan(KEY1_GPIO_Port, KEY1_Pin) == 1)
-    {
-       // 按下 -> 点亮 (低电平点亮)
-       HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
-    }
-    else
-    {
-       // 松开 -> 熄灭
-       HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
-    }
-
-    // 使用消抖函数控制 LED2
-    if (Key_Scan(KEY2_GPIO_Port, KEY2_Pin) == 1)
-    {
-       HAL_GPIO_WritePin(GPIOA, LED2_Pin, GPIO_PIN_RESET);
-    }
-    else
-    {
-       HAL_GPIO_WritePin(GPIOA, LED2_Pin, GPIO_PIN_SET);
-    }
-
-    if (Key_Scan(LIGHT_SENSOR_GPIO_Port, LIGHT_SENSOR_Pin) == 1)
-    {
-      if (Buzzer_flag == 0)
-      {
-        Buzzer_flag = 1;
-        HAL_GPIO_WritePin(GPIOB, BUZZER_Pin, GPIO_PIN_SET);
-      }
-    }
-    else
-    {
-      if (Buzzer_flag == 1)
-      {
-        Buzzer_flag = 0;
-        Buzzer_count++;
-        // Fix 3: 只在计数变化时刷新 OLED
-        OLED_Clear();
-        OLED_ShowString(1, 1, "Buzzer Count:");
-        OLED_ShowNum(1, 14, Buzzer_count, 3);
-        HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
-      }
-    }
+    HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+    HAL_Delay(100);
+    HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+    HAL_Delay(100);
+    HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
   }
   /* USER CODE END 3 */
+}
+
+void Toggle_Light(void)
+{
+  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+  HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
 }
 
 /**
