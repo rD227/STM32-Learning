@@ -19,7 +19,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "stm32f1xx_hal.h"
 #include "stm32f1xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -205,13 +204,23 @@ void SysTick_Handler(void)
 void EXTI15_10_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
-  HAL_Delay(10);
-  if (HAL_GPIO_ReadPin(EXIT_KEY_2_GPIO_Port, EXIT_KEY_2_Pin) == GPIO_PIN_RESET)
+  /*static uint32_t last_tick = 0;
+  uint32_t now = HAL_GetTick();
+  if (now - last_tick > 50)
+  {
+    last_tick = now;
+    if (HAL_GPIO_ReadPin(KEY_GND_EXIT_GPIO_Port, KEY_GND_EXIT_Pin) == GPIO_PIN_SET)
+    {
+      Toggle_Light();
+    }
+  }*/
+  HAL_Delay(20); // 延时消抖
+  if (HAL_GPIO_ReadPin(KEY_GND_EXIT_GPIO_Port, KEY_GND_EXIT_Pin) == GPIO_PIN_RESET)
   {
     Toggle_Light();
   }
   /* USER CODE END EXTI15_10_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(EXIT_KEY_2_Pin);
+  HAL_GPIO_EXTI_IRQHandler(KEY_GND_EXIT_Pin);
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
 
   /* USER CODE END EXTI15_10_IRQn 1 */

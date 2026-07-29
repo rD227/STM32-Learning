@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+void Toggle_Light(void);
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -51,7 +51,6 @@ extern "C" {
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
-void Toggle_Light(void);
 
 /* USER CODE BEGIN EFP */
 
@@ -68,13 +67,15 @@ void Toggle_Light(void);
 #define ROTATE_CODER_A_GPIO_Port GPIOA
 #define KEY1_Pin GPIO_PIN_1
 #define KEY1_GPIO_Port GPIOB
-#define EXIT_KEY_2_Pin GPIO_PIN_11
-#define EXIT_KEY_2_GPIO_Port GPIOB
-#define EXIT_KEY_2_EXTI_IRQn EXTI15_10_IRQn
+#define KEY2_Pin GPIO_PIN_2
+#define KEY2_GPIO_Port GPIOB
 #define BUZZER_Pin GPIO_PIN_12
 #define BUZZER_GPIO_Port GPIOB
 #define LIGHT_SENSOR_Pin GPIO_PIN_13
 #define LIGHT_SENSOR_GPIO_Port GPIOB
+#define KEY_GND_EXIT_Pin GPIO_PIN_10
+#define KEY_GND_EXIT_GPIO_Port GPIOA
+#define KEY_GND_EXIT_EXTI_IRQn EXTI15_10_IRQn
 #define OLED_1_Pin GPIO_PIN_8
 #define OLED_1_GPIO_Port GPIOB
 #define OLED_2_Pin GPIO_PIN_9

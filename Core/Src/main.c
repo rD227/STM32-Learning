@@ -50,8 +50,9 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-/* USER CODE BEGIN PFP */
 
+/* USER CODE BEGIN PFP */
+void Toggle_Light(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -105,19 +106,13 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
     HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
-    HAL_Delay(100);
+    HAL_Delay(1000);
     HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
-    HAL_Delay(100);
+    HAL_Delay(1000);
     HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
   }
   /* USER CODE END 3 */
-}
-
-void Toggle_Light(void)
-{
-  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-  HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
 }
 
 /**
@@ -159,7 +154,11 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void Toggle_Light(void)
+{
+  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+  HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+}
 /* USER CODE END 4 */
 
 /**
