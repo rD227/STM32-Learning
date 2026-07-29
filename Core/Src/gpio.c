@@ -61,10 +61,10 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : ROTATE_CODER_C_Pin ROTATE_CODER_A_Pin KEY_GND_EXIT_Pin */
-  GPIO_InitStruct.Pin = ROTATE_CODER_C_Pin|ROTATE_CODER_A_Pin|KEY_GND_EXIT_Pin;
+  /*Configure GPIO pins : ROTATE_CODER_C_Pin ROTATE_CODER_A_Pin */
+  GPIO_InitStruct.Pin = ROTATE_CODER_C_Pin|ROTATE_CODER_A_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : KEY1_Pin */
@@ -85,6 +85,12 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(LIGHT_SENSOR_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : KEY_GND_EXIT_Pin */
+  GPIO_InitStruct.Pin = KEY_GND_EXIT_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(KEY_GND_EXIT_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : OLED_1_Pin OLED_2_Pin */
   GPIO_InitStruct.Pin = OLED_1_Pin|OLED_2_Pin;
