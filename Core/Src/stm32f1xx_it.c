@@ -217,7 +217,7 @@ void EXTI15_10_IRQHandler(void)
   HAL_Delay(20); // 延时消抖
   if (HAL_GPIO_ReadPin(KEY_GND_EXIT_GPIO_Port, KEY_GND_EXIT_Pin) == GPIO_PIN_RESET)
   {
-    Toggle_Light();
+    //Toggle_Light();
   }
   /* USER CODE END EXTI15_10_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(KEY_GND_EXIT_Pin);

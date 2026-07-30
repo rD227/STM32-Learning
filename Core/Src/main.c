@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -88,30 +89,26 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  int Buzzer_flag = 0, Buzzer_count = 0;
+  int Buzzer_count = 0;
 
   OLED_Init();
   OLED_Clear();
   OLED_ShowString(1, 1, "Buzzer Count:");
   OLED_ShowNum(1, 14, Buzzer_count, 3);
+  char Message[] = "Hello, World!";
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+  while (1){
+    HAL_UART_Transmit(& huart2, (uint8_t*)Message, sizeof(Message) - 1, HAL_MAX_DELAY);
+    HAL_Delay(1000);
+  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
-    HAL_Delay(1000);
-    HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
-    HAL_Delay(1000);
-    HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
-    HAL_delay
-  }
   /* USER CODE END 3 */
 }
 
@@ -154,11 +151,7 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void Toggle_Light(void)
-{
-  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-  HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-}
+
 /* USER CODE END 4 */
 
 /**
