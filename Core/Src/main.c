@@ -47,7 +47,7 @@
 
 /* USER CODE BEGIN PV */
 char Message[] = "Hello, World!";
-char Received[100];
+char Received[5];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -58,11 +58,11 @@ void Toggle_Light(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
   if(huart->Instance == USART2){
-    HAL_UART_Transmit_IT(& huart2, (uint8_t*)Received, sizeof(Received) - 1);
+    HAL_UART_Transmit_IT(& huart2, (uint8_t*)Received, sizeof(Received) );
     //HAL_Delay(1000);
-    HAL_UART_Receive_IT(&huart2, (uint8_t*)Received, sizeof(Received) - 1);
+    HAL_UART_Receive_IT(&huart2, (uint8_t*)Received, sizeof(Received) );
   }
 }
 /* USER CODE END 0 */
