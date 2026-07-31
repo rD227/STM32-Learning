@@ -47,7 +47,7 @@
 
 /* USER CODE BEGIN PV */
 char Message[] = "Hello, World!";
-char Received[5];
+char Received[64];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -58,11 +58,12 @@ void Toggle_Light(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size){
   if(huart->Instance == USART2){
-    HAL_UART_Transmit_IT(& huart2, (uint8_t*)Received, sizeof(Received) );
-    //HAL_Delay(1000);
-    HAL_UART_Receive_IT(&huart2, (uint8_t*)Received, sizeof(Received) );
+    // 把这次实际收到的 Size 个字节原样回显
+    HAL_UART_Transmit(&huart2, (uint8_t*)Received, Size, 100);
+    // 重新启动空闲中断接收，等待下一条消息
+    HAL_UARTEx_ReceiveToIdle_IT(&huart2, (uint8_t*)Received, sizeof(Received));
   }
 }
 /* USER CODE END 0 */
@@ -101,14 +102,14 @@ int main(void)
   int Buzzer_count = 0;
 
   OLED_Init();
-  OLED_Clear();
-  OLED_ShowString(1, 1, "Buzzer Count:");
+  //OLED_Clear();
+  //OLED_ShowString(1, 1, "Buzzer Count:");
   OLED_ShowNum(1, 14, Buzzer_count, 3);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  HAL_UART_Receive_IT(&huart2, (uint8_t*)Received, sizeof(Received) - 1);
+  HAL_UARTEx_ReceiveToIdle_IT(&huart2, (uint8_t*)Received, sizeof(Received));
   while (1){
 
   }
