@@ -46,7 +46,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+char Message[] = "Hello, World!";
+char Received[100];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,7 +58,13 @@ void Toggle_Light(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
+  if(huart->Instance == USART2){
+    HAL_UART_Transmit_IT(& huart2, (uint8_t*)Received, sizeof(Received) - 1);
+    //HAL_Delay(1000);
+    HAL_UART_Receive_IT(&huart2, (uint8_t*)Received, sizeof(Received) - 1);
+  }
+}
 /* USER CODE END 0 */
 
 /**
@@ -97,16 +104,13 @@ int main(void)
   OLED_Clear();
   OLED_ShowString(1, 1, "Buzzer Count:");
   OLED_ShowNum(1, 14, Buzzer_count, 3);
-  char Message[] = "Hello, World!";
-  char Received[100];
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  HAL_UART_Receive_IT(&huart2, (uint8_t*)Received, sizeof(Received) - 1);
   while (1){
-    HAL_UART_Receive(&huart2, (uint8_t*)Received, sizeof(Received) - 1, HAL_MAX_DELAY);
-    HAL_UART_Transmit_IT(& huart2, (uint8_t*)Message, sizeof(Message) - 1);
-    HAL_Delay(1000);
+
   }
     /* USER CODE END WHILE */
 
