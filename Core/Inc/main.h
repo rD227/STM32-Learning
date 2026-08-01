@@ -72,10 +72,6 @@ void Error_Handler(void);
 #define KEY_GND_EXIT_Pin GPIO_PIN_10
 #define KEY_GND_EXIT_GPIO_Port GPIOA
 #define KEY_GND_EXIT_EXTI_IRQn EXTI15_10_IRQn
-#define OLED_1_Pin GPIO_PIN_8
-#define OLED_1_GPIO_Port GPIOB
-#define OLED_2_Pin GPIO_PIN_9
-#define OLED_2_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
