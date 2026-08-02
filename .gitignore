@@ -9,7 +9,7 @@ mx.scratch
 
 # CubeMX backups / copies
 *.ioc.bak
-*.bak
+*.zip
 * - 副本.*
 * - Copy.*
 
