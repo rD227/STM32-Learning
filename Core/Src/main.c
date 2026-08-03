@@ -102,13 +102,19 @@ int main(void)
   MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_I2C1_Init();
+  MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
   int Buzzer_count = 0;
 
   HAL_Delay(20);        // 等 OLED 上电稳定，STM32 启动比 OLED 快
   OLED_Init();
   OLED_NewFrame();      // 清空显存，开始新一帧
-  OLED_PrintASCIIString(0, 0, "Buzzer Count:", &afont12x6, OLED_COLOR_NORMAL);
+  //OLED_PrintASCIIString(0, 0, "Buzzer Count:", &afont12x6, OLED_COLOR_NORMAL);
+  for(int i = 0; i < 10; i++){
+    for(int j = 0; j < 10; j++){
+      OLED_DrawCircle(64, 32, i, OLED_COLOR_NORMAL);
+    }
+  }
   OLED_ShowFrame();     // 把显存刷到屏幕
   /* USER CODE END 2 */
 

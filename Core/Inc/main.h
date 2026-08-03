@@ -65,10 +65,6 @@ void Error_Handler(void);
 #define ROTATE_CODER_A_GPIO_Port GPIOA
 #define KEY1_Pin GPIO_PIN_1
 #define KEY1_GPIO_Port GPIOB
-#define BUZZER_Pin GPIO_PIN_12
-#define BUZZER_GPIO_Port GPIOB
-#define LIGHT_SENSOR_Pin GPIO_PIN_13
-#define LIGHT_SENSOR_GPIO_Port GPIOB
 #define KEY_GND_EXIT_Pin GPIO_PIN_10
 #define KEY_GND_EXIT_GPIO_Port GPIOA
 #define KEY_GND_EXIT_EXTI_IRQn EXTI15_10_IRQn
