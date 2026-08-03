@@ -20,6 +20,10 @@
 #include "main.h"
 #include "dma.h"
 #include "i2c.h"
+#include "stm32f103xb.h"
+#include "stm32f1xx_hal.h"
+#include "stm32f1xx_hal_dma.h"
+#include "stm32f1xx_hal_uart.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -28,6 +32,7 @@
 #include "key.h"
 #include "stm32f1xx_hal_gpio.h"
 #include "oled.h"
+#include <sys/_intsup.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,6 +55,7 @@
 /* USER CODE BEGIN PV */
 char Message[] = "Hello, World!";
 char Received[64];
+char BlueToothBuffer[200];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -66,8 +72,15 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size){
     HAL_UART_Transmit(&huart2, (uint8_t*)Received, Size, 100);
     // 重新启动空闲中断接收，等待下一条消息
     HAL_UARTEx_ReceiveToIdle_IT(&huart2, (uint8_t*)Received, sizeof(Received));
+    __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT );
+  }
+  if(huart->Instance == USART3){
+    HAL_UART_Transmit(&huart3, (uint8_t *)BlueToothBuffer, Size, 100);
+    HAL_UARTEx_ReceiveToIdle_IT(&huart3, (uint8_t *)BlueToothBuffer, sizeof(BlueToothBuffer));
+    __HAL_DMA_DISABLE_IT(&hdma_usart3_rx, DMA_IT_HT );
   }
 }
+
 /* USER CODE END 0 */
 
 /**
@@ -110,19 +123,23 @@ int main(void)
   OLED_Init();
   OLED_NewFrame();      // 清空显存，开始新一帧
   //OLED_PrintASCIIString(0, 0, "Buzzer Count:", &afont12x6, OLED_COLOR_NORMAL);
-  for(int i = 0; i < 10; i++){
-    for(int j = 0; j < 10; j++){
-      OLED_DrawCircle(64, 32, i, OLED_COLOR_NORMAL);
-    }
-  }
-  OLED_ShowFrame();     // 把显存刷到屏幕
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  HAL_UARTEx_ReceiveToIdle_IT(&huart2, (uint8_t*)Received, sizeof(Received));
+  HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t*)Received, sizeof(Received));
+  __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT );
+  HAL_UARTEx_ReceiveToIdle_DMA(&huart3, (uint8_t *)BlueToothBuffer, sizeof(BlueToothBuffer));
+  __HAL_DMA_DISABLE_IT(&hdma_usart3_rx, DMA_IT_HT ); 
   while (1){
-
+  for(int i = 0; i < 10; i++){
+    for(int j = 0; j < 10; j++){
+      OLED_DrawCircle(64, 32, i, OLED_COLOR_NORMAL);
+      HAL_Delay(500);
+    }
+  }
+  OLED_ShowFrame();     // 把显存刷到屏幕
   }
     /* USER CODE END WHILE */
 
