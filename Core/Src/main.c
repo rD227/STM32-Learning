@@ -20,10 +20,6 @@
 #include "main.h"
 #include "dma.h"
 #include "i2c.h"
-#include "stm32f103xb.h"
-#include "stm32f1xx_hal.h"
-#include "stm32f1xx_hal_dma.h"
-#include "stm32f1xx_hal_uart.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -132,14 +128,23 @@ int main(void)
   __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT );
   HAL_UARTEx_ReceiveToIdle_DMA(&huart3, (uint8_t *)BlueToothBuffer, sizeof(BlueToothBuffer));
   __HAL_DMA_DISABLE_IT(&hdma_usart3_rx, DMA_IT_HT ); 
+  int r = 8;            // 小球半径
+  int x = 20, y = 20;   // 球心位置
+  int dx = 3, dy = 2;   // 每帧位移(速度)
   while (1){
-  for(int i = 0; i < 10; i++){
-    for(int j = 0; j < 10; j++){
-      OLED_DrawCircle(64, 32, i, OLED_COLOR_NORMAL);
-      HAL_Delay(500);
-    }
-  }
-  OLED_ShowFrame();     // 把显存刷到屏幕
+    x += dx;
+    y += dy;
+    // 碰到左右边缘: 先贴边再反弹, 防止冲出屏幕
+    if (x < r)        { x = r;        dx = -dx; }
+    if (x > 127 - r)  { x = 127 - r;  dx = -dx; }
+    // 碰到上下边缘
+    if (y < r)        { y = r;        dy = -dy; }
+    if (y > 63 - r)   { y = 63 - r;   dy = -dy; }
+
+    OLED_NewFrame();
+    OLED_DrawCircle(x, y, r, OLED_COLOR_NORMAL);
+    OLED_ShowFrame();
+    HAL_Delay(20);
   }
     /* USER CODE END WHILE */
 
