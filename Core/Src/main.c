@@ -20,6 +20,7 @@
 #include "main.h"
 #include "dma.h"
 #include "i2c.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -29,6 +30,7 @@
 #include "stm32f1xx_hal_gpio.h"
 #include "oled.h"
 #include <sys/_intsup.h>
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,6 +54,8 @@
 char Message[] = "Hello, World!";
 char Received[64];
 char BlueToothBuffer[200];
+int count = 0;
+int offset_counter = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -74,6 +78,11 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size){
     HAL_UART_Transmit(&huart3, (uint8_t *)BlueToothBuffer, Size, 100);
     HAL_UARTEx_ReceiveToIdle_IT(&huart3, (uint8_t *)BlueToothBuffer, sizeof(BlueToothBuffer));
     __HAL_DMA_DISABLE_IT(&hdma_usart3_rx, DMA_IT_HT );
+  }
+}
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+  if(htim->Instance == TIM2){
+    offset_counter++;
   }
 }
 
@@ -112,8 +121,8 @@ int main(void)
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   MX_USART3_UART_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  int Buzzer_count = 0;
 
   HAL_Delay(20);        // 等 OLED 上电稳定，STM32 启动比 OLED 快
   OLED_Init();
@@ -127,24 +136,24 @@ int main(void)
   HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t*)Received, sizeof(Received));
   __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT );
   HAL_UARTEx_ReceiveToIdle_DMA(&huart3, (uint8_t *)BlueToothBuffer, sizeof(BlueToothBuffer));
-  __HAL_DMA_DISABLE_IT(&hdma_usart3_rx, DMA_IT_HT ); 
-  int r = 8;            // 小球半径
-  int x = 20, y = 20;   // 球心位置
-  int dx = 3, dy = 2;   // 每帧位移(速度)
-  while (1){
-    x += dx;
-    y += dy;
-    // 碰到左右边缘: 先贴边再反弹, 防止冲出屏幕
-    if (x < r)        { x = r;        dx = -dx; }
-    if (x > 127 - r)  { x = 127 - r;  dx = -dx; }
-    // 碰到上下边缘
-    if (y < r)        { y = r;        dy = -dy; }
-    if (y > 63 - r)   { y = 63 - r;   dy = -dy; }
+  __HAL_DMA_DISABLE_IT(&hdma_usart3_rx, DMA_IT_HT );
+  HAL_TIM_Base_Start_IT(&htim2); 
+  int r = 0;            // 波纹半径
+  int dr = 2;           // 半径每帧的变化量(扩散速度)
+  int count_offset = 65535; // 计数器溢出时的偏移量
+  count = __HAL_TIM_GET_COUNTER(&htim2) + count_offset * offset_counter;
+  //timer2 = 36000000 / 900 / 4 = 10000
+  //of course, it didn't about counter, it just about the filiter
+  char rode[10] = {0};
 
+  while (1){
     OLED_NewFrame();
-    OLED_DrawCircle(x, y, r, OLED_COLOR_NORMAL);
+    OLED_PrintASCIIString(0, 0, "Count: ", &afont12x6, OLED_COLOR_NORMAL);
+    count = __HAL_TIM_GET_COUNTER(&htim2);// + count_offset * offset_counter;
+    sprintf(rode, "%d", count);
+    OLED_PrintASCIIString(48, 0, rode, &afont12x6, OLED_COLOR_NORMAL);
     OLED_ShowFrame();
-    HAL_Delay(20);
+    HAL_Delay(100);
   }
     /* USER CODE END WHILE */
 
@@ -182,7 +191,7 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)

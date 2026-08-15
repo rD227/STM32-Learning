@@ -15,5 +15,7 @@
     ],
     "files.associations": {
         "*.bak": "plaintext"
-    }
+    },
+    "editor.fontFamily": "'monofur',Consolas, 'Courier New', monospace",
+    "editor.fontWeight": "bold"
 }
