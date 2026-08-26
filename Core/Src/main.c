@@ -20,6 +20,8 @@
 #include "main.h"
 #include "dma.h"
 #include "i2c.h"
+#include "stm32f1xx_hal.h"
+#include "stm32f1xx_hal_tim.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -122,11 +124,13 @@ int main(void)
   MX_I2C1_Init();
   MX_USART3_UART_Init();
   MX_TIM2_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
   HAL_Delay(20);        // 等 OLED 上电稳定，STM32 启动比 OLED 快
   OLED_Init();
   OLED_NewFrame();      // 清空显存，开始新一帧
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
   //OLED_PrintASCIIString(0, 0, "Buzzer Count:", &afont12x6, OLED_COLOR_NORMAL);
 
   /* USER CODE END 2 */
@@ -140,7 +144,7 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim2); 
   int r = 0;            // 波纹半径
   int dr = 2;           // 半径每帧的变化量(扩散速度)
-  int count_offset = 65535; // 计数器溢出时的偏移量
+  int count_offset = 65536; // 计数器溢出时的偏移量
   count = __HAL_TIM_GET_COUNTER(&htim2) + count_offset * offset_counter;
   //timer2 = 36000000 / 900 / 4 = 10000
   //of course, it didn't about counter, it just about the filiter
@@ -153,7 +157,15 @@ int main(void)
     sprintf(rode, "%d", count);
     OLED_PrintASCIIString(48, 0, rode, &afont12x6, OLED_COLOR_NORMAL);
     OLED_ShowFrame();
-    HAL_Delay(100);
+    //HAL_Delay(100);
+    for(int i = 0;i < 100; i++){
+      __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, i);
+      HAL_Delay(10);
+    }
+    for(int i = 100;i > 0; i--){
+      __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, i);
+      HAL_Delay(10);
+    }
   }
     /* USER CODE END WHILE */
 
@@ -191,7 +203,7 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)

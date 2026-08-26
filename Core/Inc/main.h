@@ -57,8 +57,6 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define ROTATE_CODER_C_Pin GPIO_PIN_6
-#define ROTATE_CODER_C_GPIO_Port GPIOA
 #define ROTATE_CODER_A_Pin GPIO_PIN_7
 #define ROTATE_CODER_A_GPIO_Port GPIOA
 #define KEY1_Pin GPIO_PIN_1

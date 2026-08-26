@@ -49,11 +49,11 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  /*Configure GPIO pins : ROTATE_CODER_C_Pin ROTATE_CODER_A_Pin */
-  GPIO_InitStruct.Pin = ROTATE_CODER_C_Pin|ROTATE_CODER_A_Pin;
+  /*Configure GPIO pin : ROTATE_CODER_A_Pin */
+  GPIO_InitStruct.Pin = ROTATE_CODER_A_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(ROTATE_CODER_A_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : KEY1_Pin */
   GPIO_InitStruct.Pin = KEY1_Pin;
