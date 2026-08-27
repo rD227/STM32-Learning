@@ -20,7 +20,6 @@
 #include "main.h"
 #include "dma.h"
 #include "i2c.h"
-#include "stm32f1xx_hal.h"
 #include "stm32f1xx_hal_tim.h"
 #include "tim.h"
 #include "usart.h"
@@ -42,7 +41,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define MAX_ROTATER 20
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -56,8 +55,10 @@
 char Message[] = "Hello, World!";
 char Received[64];
 char BlueToothBuffer[200];
-int count = 0;
+int light_receiver_count = 0;
 int offset_counter = 0;
+int rotater_count = 0;
+float duty_cycle = 0.0f;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -125,12 +126,18 @@ int main(void)
   MX_USART3_UART_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
+  MX_TIM1_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 
   HAL_Delay(20);        // 等 OLED 上电稳定，STM32 启动比 OLED 快
   OLED_Init();
   OLED_NewFrame();      // 清空显存，开始新一帧
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_ALL);
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
+  HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_1);
+  HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_2);
+  
   //OLED_PrintASCIIString(0, 0, "Buzzer Count:", &afont12x6, OLED_COLOR_NORMAL);
 
   /* USER CODE END 2 */
@@ -142,22 +149,37 @@ int main(void)
   HAL_UARTEx_ReceiveToIdle_DMA(&huart3, (uint8_t *)BlueToothBuffer, sizeof(BlueToothBuffer));
   __HAL_DMA_DISABLE_IT(&hdma_usart3_rx, DMA_IT_HT );
   HAL_TIM_Base_Start_IT(&htim2); 
-  int r = 0;            // 波纹半径
-  int dr = 2;           // 半径每帧的变化量(扩散速度)
+
   int count_offset = 65536; // 计数器溢出时的偏移量
-  count = __HAL_TIM_GET_COUNTER(&htim2) + count_offset * offset_counter;
-  //timer2 = 36000000 / 900 / 4 = 10000
-  //of course, it didn't about counter, it just about the filiter
+  light_receiver_count = __HAL_TIM_GET_COUNTER(&htim2) + count_offset * offset_counter;
+  
   char rode[10] = {0};
 
   while (1){
+    rotater_count = __HAL_TIM_GET_COUNTER(&htim3);
+    
+    if(rotater_count > 60000){
+      rotater_count = 0;
+      __HAL_TIM_SET_COUNTER(&htim3, TIM_CHANNEL_2);
+    }else if ( rotater_count > MAX_ROTATER ) {
+      rotater_count = MAX_ROTATER;
+      __HAL_TIM_SET_COUNTER(&htim3, TIM_CHANNEL_2);
+    }
+
+    //2.5%~12.5%
+    //50hz 20ms 0~180度 检测到0.5ms高电平输出为0的模拟信号 2.5为180度的模拟信号
+    duty_cycle = 2.5 + (rotater_count * 10.0 / MAX_ROTATER);
+    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, (uint32_t)(duty_cycle * 1000 / 20));
+
     OLED_NewFrame();
     OLED_PrintASCIIString(0, 0, "Count: ", &afont12x6, OLED_COLOR_NORMAL);
-    count = __HAL_TIM_GET_COUNTER(&htim2);// + count_offset * offset_counter;
-    sprintf(rode, "%d", count);
+    
+    light_receiver_count = __HAL_TIM_GET_COUNTER(&htim2);// + count_offset * offset_counter;
+    sprintf(rode, "%d", light_receiver_count);
+    
     OLED_PrintASCIIString(48, 0, rode, &afont12x6, OLED_COLOR_NORMAL);
     OLED_ShowFrame();
-    //HAL_Delay(100);
+    
     for(int i = 0;i < 100; i++){
       __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, i);
       HAL_Delay(10);
