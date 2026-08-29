@@ -20,7 +20,6 @@
 #include "main.h"
 #include "dma.h"
 #include "i2c.h"
-#include "stm32f1xx_hal_tim.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -156,30 +155,31 @@ int main(void)
   char rode[10] = {0};
 
   while (1){
-    rotater_count = __HAL_TIM_GET_COUNTER(&htim3);
+    rotater_count = __HAL_TIM_GET_COUNTER(&htim1);
     
     if(rotater_count > 60000){
       rotater_count = 0;
-      __HAL_TIM_SET_COUNTER(&htim3, TIM_CHANNEL_2);
+      __HAL_TIM_SET_COUNTER(&htim1, 0);
     }else if ( rotater_count > MAX_ROTATER ) {
       rotater_count = MAX_ROTATER;
-      __HAL_TIM_SET_COUNTER(&htim3, TIM_CHANNEL_2);
+      __HAL_TIM_SET_COUNTER(&htim1, MAX_ROTATER);
     }
 
     //2.5%~12.5%
     //50hz 20ms 0~180度 检测到0.5ms高电平输出为0的模拟信号 2.5为180度的模拟信号
-    duty_cycle = 2.5 + (rotater_count * 10.0 / MAX_ROTATER);
-    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, (uint32_t)(duty_cycle * 1000 / 20));
+    duty_cycle = ((float)rotater_count * 10.0f / (float)MAX_ROTATER + 2.5f) / 100.0f * 2000.0f;
+    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, (uint32_t)duty_cycle );
+
 
     OLED_NewFrame();
     OLED_PrintASCIIString(0, 0, "Count: ", &afont12x6, OLED_COLOR_NORMAL);
     
     light_receiver_count = __HAL_TIM_GET_COUNTER(&htim2);// + count_offset * offset_counter;
-    sprintf(rode, "%d", light_receiver_count);
+    sprintf(rode, "%d", rotater_count);
     
     OLED_PrintASCIIString(48, 0, rode, &afont12x6, OLED_COLOR_NORMAL);
     OLED_ShowFrame();
-    
+    /** 
     for(int i = 0;i < 100; i++){
       __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, i);
       HAL_Delay(10);
@@ -187,7 +187,9 @@ int main(void)
     for(int i = 100;i > 0; i--){
       __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, i);
       HAL_Delay(10);
-    }
+      }
+    
+    **/    
   }
     /* USER CODE END WHILE */
 
